@@ -1,5 +1,80 @@
-function [ready] = AlignGUI5()
-%%
+% AlignGUI5 Visual interface to align images, and optionally, identify 
+% cellular ROIs.
+% 
+% AlignGUI5 is a frontend for aligning large batches of files. It allows
+% the user to select from several alignment routines.
+%
+% type: function
+%
+% inputs: 
+%  varargin usage:
+%    AlignGUI5  -- user prompt for input and output folder
+%    AlignGUI5(output_folder)
+%    AlignGUI5(input_folder, output_folder)
+%
+% outputs:
+%  none
+% 
+% dependencies on custom functions:
+%  FindFolders 
+%  findjobj
+%  AlignMatlab
+%  AlignOlympus4D
+%  AlignTurboReg
+%  AlignTurboRegTranslation
+%  FindFiles
+%  GrabImgType
+%  imreadtiffstack
+%  playmovie
+%  FastFindTransients
+%  GrabStimType
+%  leadingnum2str
+%  prepfigure
+%  StartMiji  
+%
+% Robert Barretto, robertb@gmail.com
+% 04/07/2015 3:40pm
+
+function [ready] = AlignGUI5(varargin)
+
+% input handling
+nargin = length(varargin);
+switch nargin
+    case 0
+        % user display to select original image folder
+        input_folder = uigetdir(pwd,'Select the directory containing original images (optional)');    
+        if input_folder==0
+            filepath = '';
+        end
+        % user display to select aligned image folder
+        output_folder = uigetdir(pwd,'Select the directory containing aligned images and info data (required)');    
+        if input_folder==0
+            disp('Output path required. Exiting.')
+            return
+        end
+    case 1
+        if strcmp('debug',varargin{1})
+            if ismac
+                input_folder = '/Users/rpjb/desktop/test imaging data';
+                output_folder = '/Users/rpjb/desktop/test aligned data';
+            else
+                input_folder = 'G:\research\columbia research\taste bud imaging\set 1 sorted';
+                output_folder = 'G:\research\columbia research\taste bud imaging\set 1 aligned';    
+            end
+        else
+            % user only provides the aligned data folder
+            input_folder = '';
+            output_folder = varargin{1};            
+        end
+    case 2        
+        % user provides original data and aligned data folder
+        input_folder = varargin{1};
+        output_folder = varargin{2};
+    otherwise
+        disp('Input arguments not understood. Exiting.')
+        return
+end
+
 % create figure display
 close all
 DisplayFigure = figure;
@@ -8,30 +83,11 @@ set(DisplayFigure,'Name','Image Manager','NumberTitle','off')
 set(DisplayFigure,'Toolbar','figure')
 
 
-% temp holder for files
+% set display position depending on mac or pc
 if ismac
     set(DisplayFigure,'position',[5 8.5 24.5 22])
-
-    input_folder = '/Volumes/USB 2/set 1 sorted';
-    output_folder = '/Volumes/USB 2/set 3 aligned';
-
-    input_folder = '/Volumes/USB 2/imaging data';
-    output_folder = '/Volumes/USB 2/aligned data';
-
-    input_folder = '/Users/rpjb/desktop/test imaging data';
-    output_folder = '/Users/rpjb/desktop/test aligned data';
 else
     set(DisplayFigure,'position',[5 2.5 24.5 22])
-    input_folder = 'F:\set 3 sorted';
-    output_folder = 'F:\set 3 aligned';
-    
-    input_folder = 'C:\Users\rpjb\Desktop\set 2 sorted';
-    output_folder = 'C:\Users\rpjb\Desktop\set 2 aligned';
-    input_folder = 'J:\set 2 sorted';
-    output_folder = 'J:\set 2 aligned';
-
-    input_folder = 'G:\research\columbia research\taste bud imaging\set 1 sorted';
-    output_folder = 'G:\research\columbia research\taste bud imaging\set 1 aligned';    
 end
     
 %%%%%%%%%%%%%%%%

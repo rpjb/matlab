@@ -21,11 +21,6 @@
 
 function frameperiod = getepiframeperiod(folder)
 
-
-% folder = '/Users/rpjb/Dropbox/project - calcium imaging analysis/krebs wash_1';
-% imagingfile = FindFiles(folder,'.*\.tif',1);
-%folder = '/Volumes/USB 2/01-30-15/2 - isovaleric acid_1';
-
 imagingfile = FindFiles(folder,'.*\.tif',1);
 
 if length(imagingfile) == 1
