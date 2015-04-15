@@ -45,14 +45,16 @@ switch nargin
         input_folder = uigetdir(pwd,'Select the directory containing original images (optional)');    
         if input_folder==0
             filepath = '';
+            input_folder = '';
         end
         % user display to select aligned image folder
         output_folder = uigetdir(pwd,'Select the directory containing aligned images and info data (required)');    
-        if input_folder==0
+        if output_folder==0
             disp('Output path required. Exiting.')
             return
         end
     case 1
+        % if provided one 'debug' then default to below folder
         if strcmp('debug',varargin{1})
             if ismac
                 input_folder = '/Users/rpjb/desktop/test imaging data';
@@ -61,6 +63,7 @@ switch nargin
                 input_folder = 'G:\research\columbia research\taste bud imaging\set 1 sorted';
                 output_folder = 'G:\research\columbia research\taste bud imaging\set 1 aligned';    
             end
+        % if provided only the output folder    
         else
             % user only provides the aligned data folder
             input_folder = '';
@@ -149,7 +152,11 @@ set(AlignedLocationText,'String',output_folder);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % locate folder contents 
-imagingsets = FindFolders(input_folder,'.*.',2);
+if ~isempty(input_folder)
+    imagingsets = FindFolders(input_folder,'.*.',2);
+else
+    imagingsets = '';
+end
 imagingoutputsets = FindFolders(output_folder,'.*.',2);
 % if input folder is not available, but output folder is
 % must mean that data is procesed into aligned files
@@ -337,7 +344,7 @@ u4 = uicontrol('Units','centimeters','Style','radiobutton','String','Turboreg tr
     'pos',[0.15 3.25 3.5 0.5],'parent',AlignOption,'Value',1);
 
 % if the input_folder has no raw data, disable the align panel
-if strcmp(input_folder,output_folder)
+if strcmp(input_folder,'')
     set(AlignPanel,'Visible','on')
 end
 
