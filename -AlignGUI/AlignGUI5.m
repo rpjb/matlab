@@ -49,7 +49,7 @@ switch nargin
         end
         % user display to select aligned image folder
         output_folder = uigetdir(pwd,'Select the directory containing aligned images and info data (required)');    
-        if output_folder==0
+        if isnumeric(output_folder)
             disp('Output path required. Exiting.')
             return
         end
