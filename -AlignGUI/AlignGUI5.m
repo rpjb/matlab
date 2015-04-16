@@ -37,7 +37,7 @@
 
 function [ready] = AlignGUI5(varargin)
 
-% input handling
+% handle various inputs
 nargin = length(varargin);
 switch nargin
     case 0
@@ -85,7 +85,6 @@ set(DisplayFigure,'Units','centimeters')
 set(DisplayFigure,'Name','Image Manager','NumberTitle','off')
 set(DisplayFigure,'Toolbar','figure')
 
-
 % set display position depending on mac or pc
 if ismac
     set(DisplayFigure,'position',[5 8.5 24.5 22])
@@ -96,7 +95,7 @@ end
 %%%%%%%%%%%%%%%%
 % status display 
 % status update
-%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
 StatusText = uicontrol(DisplayFigure,'Style','text','HorizontalAlignment','left');
 set(StatusText,'String','Current Status','Units','centimeters');
 set(StatusText,'Position',[.5 10 10 0.5]);
@@ -107,10 +106,9 @@ statusclick = 0;
         disp('manual stop')
     end
 
-%%%%%%%%%%%%%%%%
-% debug keyboard
-% button for manual keyboard
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% keyboard button for debugging
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ManualButton = uicontrol(DisplayFigure,'Style','PushButton');
 set(ManualButton,'String','keyboard','Units','centimeters');
 set(ManualButton,'Callback',@ManualFcn);
@@ -119,7 +117,6 @@ set(ManualButton,'Position',[.5 11 2 0.5]);
     function [] = ManualFcn(~,~)
         keyboard
     end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % display for main directories
@@ -530,7 +527,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
             info.img.max_projection = max(data,[],3);
             info.img.width = size(data,1);
             info.img.height = size(data,2);
-            info.version = '0.3';
+            info.version = '0.5';
 
             save(info_file,'info')
 
