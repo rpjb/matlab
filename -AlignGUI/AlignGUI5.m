@@ -165,7 +165,6 @@ end
 filedata = cell(length(imagingsets),3);
 rowstoremove = zeros(length(imagingsets),1);
 
-
 for i=1:length(imagingsets)  
     % skip if a main folder
     if strcmp(imagingsets(i).path,input_folder)
@@ -499,7 +498,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 disp(['img not found: ' info_file])
                 % skip to next file
                 continue
-            end            
+            end         
             % load info structure
             temp = load(info_file);
             info = temp.info;
@@ -513,6 +512,17 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                     % skip to next file
                     continue
                 end
+            elseif strcmp(info.type,'epi single-tif')
+                temp = dir(fullfile(align_out_folder,'*.tif'));
+                if isempty(temp)
+                    set(StatusText,'String','img file not found');
+                    disp(['img not found: ' img_file])
+                    % skip to next file
+                    continue
+                end               
+                % if img_file doesn't exist skip
+                img_file = fullfile(align_out_folder,temp.name);
+                output_file = img_file;
             else
                 % if img_file doesn't exist skip
                 img_file = fullfile(align_out_folder,['aligned.tif']);
@@ -563,9 +573,16 @@ set(ManualPickButton,'Position',[.5 3.5 3 1]);
             disp('only analyze first one')
         end
         row = selecteddata(1,1);
-        currentfiledata = filedata{row,:};            
-        tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},'aligned.tif');
+        currentfiledata = filedata{row,:};
 
+        tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},'aligned.tif');
+        if ~exist(tif_file)            
+            temp = dir(fullfile(output_folder, filedata{row,1}, filedata{row,2},'*.tif'));
+            if isempty(temp)
+                disp(['img not found: ' img_file])
+            end
+            tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},temp.name);
+        end
         % spawn interface for picking cells
         currentfig = playmovie(tif_file);
         waitfor(currentfig)
@@ -605,15 +622,23 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
             info = LoadInfoFile(row);
             infopath = filedata{row,9};
 
-
-            info = GrabStimType(output_folder);
+            switch info.type
+                case 'epi single-tif'
+                    info = GrabEpiStimType(infopath);
+                case ' '
+                    info = GrabStimType(infopath);                
+                otherwise
+                    disp('img type not yet supported')
+                    keyboard
+                    return
+            end
 
             if isfield(info,'cells')
                 % make plots
                 disp(['numcells:' num2str(info.cells.numcells)])
                 for q = 1:info.cells.numcells
                     PlotFigure = figure;
-                    prepfigure(PlotFigure,[15 5]);
+                    prepfigure(PlotFigure,[15 8]);
                     set(PlotFigure,'Units','centimeters')
                     PlotAxes = axes;
                     xdata = [1:length(info.cells.celltrace{q})]*info.img.period;

@@ -19,14 +19,18 @@
 % 03/03/2015 12:29pm
 
 
-function info = GrabStimType(output_folder)
+function info = GrabStimType(output_file)
 
 % load lindsey stimulation table
-lm_file = '/Users/rpjb/desktop/lmstim.xls';
+% assume the file is in the matlab path, so do not have to give the
+% absolute path
+lm_file = 'lmstim.xls';
 A = importdata(lm_file);
 
 % create output_file location
-output_file = fullfile(output_folder,'info.mat');
+% output_file = fullfile(output_folder,'info.mat');
+[output_folder,~,~] = fileparts(output_file);
+
 % load output file if exists
 if exist(output_file)
     temp=load(output_file);
@@ -87,7 +91,7 @@ datematches = strcmp(A.textdata.tastants(:,1),datasetid);
     info.stim.types = A.textdata.tastants(tastantnum,4:10);
     info.stim.onsets = A.data.programs(programnum,3:9);
     info.stim.duration = A.data.programs(programnum,10); 
-    info.version = '0.31';
+    info.version = '0.55';
 
 % save info.mat
 save(output_file,'info');
