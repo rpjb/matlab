@@ -428,8 +428,10 @@ currentfiledata = [];
                     info.metadata.isstack = false;                    
                 elseif strcmp(info.type,'olympusXYZT') % if olympus file has no period it's probably a galvo stack
                     info.align.method = 'olympus4d';
-                    % this creates a small stack 
-                    AlignOlympus4D(in_file,out_file);
+                    if ~exist(out_file)                    
+                        % this creates a small stack 
+                        AlignOlympus4D(in_file,out_file);
+                    end
                     % if olympus, then do a final alignment
                     output_file = fullfile(align_out_folder,'aligned.tif');
                     aligndata = AlignTurboRegTranslation(out_file, output_file);
