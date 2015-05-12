@@ -83,7 +83,7 @@ close all
 DisplayFigure = figure;
 set(DisplayFigure,'Units','centimeters')
 set(DisplayFigure,'Name','Image Manager','NumberTitle','off')
-set(DisplayFigure,'Toolbar','figure')
+set(DisplayFigure,'Toolbar','none')
 
 % set display position depending on mac or pc
 if ismac
