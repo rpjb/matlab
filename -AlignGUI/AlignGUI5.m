@@ -355,10 +355,12 @@ currentfiledata = [];
         % temp holder updates the status window on alignment technique used
         currentalignoption = get(get(AlignOption,'SelectedObject'),'String');        
         set(StatusText,'String',currentalignoption);
+        pause(.2)
         
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
     
@@ -368,7 +370,7 @@ currentfiledata = [];
         for i=1:numselected
             % update status string
             set(StatusText,'String',[num2str(i) ' of ' num2str(numselected)])
-            pause(.5)
+            pause(.2)
             
             row = localselecteddata(i,1);
             currentfiledata = filedata{row,:};            
@@ -459,7 +461,8 @@ currentfiledata = [];
             set(FileTable,'Data',filedata);
             
         end   
-        set(StatusText,'String','Current Status')    
+        set(StatusText,'String','Current Status')
+        pause(.2)
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -474,10 +477,11 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
     function [] = UpdateInfoFunction(~,~)
         % update Status
         set(StatusText,'String','Updating Info');
-        
+        pause(.2)
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
 
@@ -485,6 +489,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
         numselected = size(selecteddata,1);
         for i=1:numselected
             set(StatusText,'String',[num2str(i) ' of ' num2str(numselected)]);
+            pause(.2)
             row = selecteddata(i,1);
             currentfiledata = filedata{row,:};            
             align_in_folder = fullfile(input_folder, filedata{row,1}, filedata{row,2});
@@ -495,6 +500,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
             info_file = fullfile(align_out_folder,'info.mat');
             if ~exist(info_file)
                 set(StatusText,'String','info file not found');
+                pause(.2)
                 disp(['img not found: ' info_file])
                 % skip to next file
                 continue
@@ -508,6 +514,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 img_file = fullfile(align_out_folder,[filedata{row,2} '.tif']);
                 if ~exist(img_file)
                     set(StatusText,'String','img file not found');
+                    pause(.2)
                     disp(['img not found: ' img_file])
                     % skip to next file
                     continue
@@ -516,6 +523,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 temp = dir(fullfile(align_out_folder,'*.tif'));
                 if isempty(temp)
                     set(StatusText,'String','img file not found');
+                    pause(.2)
                     disp(['img not found: ' img_file])
                     % skip to next file
                     continue
@@ -528,6 +536,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 img_file = fullfile(align_out_folder,['aligned.tif']);
                 if ~exist(img_file)
                     set(StatusText,'String','img file not found');
+                    pause(.2)
                     disp(['img not found: ' img_file])
                     % skip to next file
                     continue
@@ -552,6 +561,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
         % update Status
         set(StatusText,'String','Ready');
 
+        pause(.2)
     end
 
 ManualPickButton = uicontrol('Parent',CellPanel,'Style','PushButton');
@@ -560,10 +570,12 @@ set(ManualPickButton,'Callback',@ManualPickFunction);
 set(ManualPickButton,'Position',[.5 3.5 3 1]);
     function [] = ManualPickFunction(~,~)
         % update Status
-        set(StatusText,'String','Spawn Cell Selector');
+        set(StatusText,'String','Spawning Cell Selector');
+        pause(.2);
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
 
@@ -584,6 +596,8 @@ set(ManualPickButton,'Position',[.5 3.5 3 1]);
             tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},temp.name);
         end
         % spawn interface for picking cells
+        set(StatusText,'String','Close cell selector before continuing');
+        pause(.2);
         currentfig = playmovie(tif_file);
         waitfor(currentfig)
 
@@ -600,6 +614,8 @@ set(ManualPickButton,'Position',[.5 3.5 3 1]);
 
         % update Status
         set(StatusText,'String','Ready');
+        pause(.2);
+
     end
 
 PlotButton = uicontrol('Parent',CellPanel,'Style','PushButton');
@@ -609,9 +625,11 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
     function [] = PlotFunction(~,~)
         % update Status
         set(StatusText,'String','Plotting Cells');
+        pause(.2)
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
         % identify imaging sets to process 
@@ -664,6 +682,7 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
                 end
             else
             set(StatusText,'String','dataset has no cells selected');
+            pause(.2)
             end                
         end
     end
@@ -683,6 +702,7 @@ set(ImageJButton,'Position',[.5 .5 3 1]);
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
 
@@ -706,6 +726,7 @@ set(InfoButton,'Position',[.5 1.5 3 1]);
         % check if selected data
         if isempty(selecteddata)
             set(StatusText,'String','no datasets selected');
+            pause(.2)
             return
         end
 
