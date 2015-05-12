@@ -504,12 +504,16 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 disp(['img not found: ' info_file])
                 % skip to next file
                 continue
+            else
+                % load info structure
+                temp = load(info_file);
+                info = temp.info;                
             end         
-            % load info structure
-            temp = load(info_file);
-            info = temp.info;
 
-            if strcmp(info.type,'olympus')
+            
+            
+            % determine what the image_file should be
+            if strcmp(info.type,'olympusXYT')
                 % if img_file doesn't exist skip
                 img_file = fullfile(align_out_folder,[filedata{row,2} '.tif']);
                 if ~exist(img_file)
@@ -543,24 +547,33 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                 end               
                 output_file = img_file;
             end
-            % populate information
+            
+            
+            
+            
+            % populate image information
             data = imreadtiffstack(img_file);
             info.img.max_projection = max(data,[],3);
             info.img.width = size(data,1);
             info.img.height = size(data,2);
-            info.version = '0.5';
+            info.img.frames = size(data,3);
 
+            % bring info structure version to 0.5, but if already greater,
+            % then don't change
+            if str2num(info.version) <= 0.5
+                info.version = '0.5';
+            end
+            
+            % save info
             save(info_file,'info')
 
-            % update filedata
+            % update filedata GUI
             filedata{row,5} = info.version;
             set(FileTable,'Data',filedata);
 
         end       
-
         % update Status
         set(StatusText,'String','Ready');
-
         pause(.2)
     end
 
@@ -661,7 +674,7 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
                     PlotAxes = axes;
                     xdata = [1:length(info.cells.celltrace{q})]*info.img.period;
                     ydata = info.cells.celltrace{q};
-                    [transients,v,med] = FastFindTransients(ydata,xdata);
+                    [~,~,med] = FastFindTransients(ydata,xdata);
                     celltrace = (ydata-med)./med;
                     plot(xdata,celltrace)
                     box off
