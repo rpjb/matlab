@@ -51,19 +51,25 @@ datematches = strcmp(A.textdata.tastants(:,1),datasetid);
     % initially set the tastant program to the first match
     tastantnum = find(datematches);
     if sum(datematches) == 0
-        disp(['stimulation protocols not found for dataset: ' char(datasetid)])
-        return
+        % the file folder might have been named YYMMDD instead of MMDDYY
+        newdatasetid = datasetid{1}([3 4 5 6 1 2]);
+        datematches = strcmp(A.textdata.tastants(:,1),newdatasetid);
+        tastantnum = find(datematches);        
+        if sum(datematches) == 0        
+            disp(['stimulation protocols not found for dataset: ' char(datasetid)])
+            return
+        end        
     end
     tastantnum = tastantnum(1);
 
     % these are simple rules to address lindsey's duplicates
     if sum(datematches) > 1
         if strcmp(datasetid,'092314')
-            xm = strfind(infopath,'bud');
-            if isnum/eric(num2str(infopath(xm+4)))
-                budnum = num2str(infopath(xm+4));
+            xm = strfind(output_file,'bud');
+            if isnumeric(num2str(output_file(xm+4)))
+                budnum = num2str(output_file(xm+4));
             else
-                budnum = num2str(infopath(xm+3));
+                budnum = num2str(output_file(xm+3));
             end
             if xm <= 4
                 tastantnum = 34;
@@ -72,11 +78,11 @@ datematches = strcmp(A.textdata.tastants(:,1),datasetid);
             end
         end
         if strcmp(datasetid,'092614')
-            xm = strfind(infopath,'bud');
-            if isnumeric(num2str(infopath(xm+4)))
-                budnum = num2str(infopath(xm+4));
+            xm = strfind(output_file,'bud');
+            if isnumeric(num2str(output_file(xm+4)))
+                budnum = num2str(output_file(xm+4));
             else
-                budnum = num2str(infopath(xm+3));
+                budnum = num2str(output_file(xm+3));
             end
             if xm <= 3
                 tastantnum = 37;
