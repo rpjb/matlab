@@ -523,7 +523,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                     % skip to next file
                     continue
                 end
-            elseif strcmp(info.type,'epi single-tif')
+            elseif sum(strcmp(info.type,{'epi single-tif','olympusXYZ'}))
                 temp = dir(fullfile(align_out_folder,'*.tif'));
                 if isempty(temp)
                     set(StatusText,'String','img file not found');
@@ -575,12 +575,12 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
             % save info
             save(info_file,'info')
 
-            % update filedata GUI
+            % update filedata for GUI
             filedata{row,5} = info.version;
-            set(FileTable,'Data',filedata);
 
         end       
         % update Status
+        set(FileTable,'Data',filedata);
         set(StatusText,'String','Ready');
         pause(.2)
     end
@@ -660,18 +660,21 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
             % load info
             info = LoadInfoFile(row);
             infopath = filedata{row,9};
-
             switch info.type
                 case 'epi single-tif'
                     info = GrabEpiStimType(infopath);
-                case ' '
+                case 'olympusXYZT'
                     info = GrabStimType(infopath);                
                 otherwise
-                    disp('img type not yet supported')
-                    keyboard
-                    return
+                    % includes 'olympusXYZ'
+                    disp([info.type ' img type not yet supported'])                    
+                    continue
             end
-
+            
+            % update filedata for GUI
+            filedata{row,5} = info.version;
+            
+            % plot cells if available
             if isfield(info,'cells')
                 % make plots
                 disp(['numcells:' num2str(info.cells.numcells)])
@@ -706,6 +709,11 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
             pause(.2)
             end                
         end
+        
+        % update Status when finished
+        set(FileTable,'Data',filedata);
+        set(StatusText,'String','Ready');
+        pause(.2)
     end
 
 
