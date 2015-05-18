@@ -451,7 +451,7 @@ currentfiledata = [];
                 keyboard
             end
             info.align.date = datestr(now,'yyyy-mm-dd-HH:MM');
-            info.version = 0.4;
+            info.version = '0.4';
             SaveInfoFile(info,row)
             % update filedata
             filedata{row,3} = true;
@@ -558,10 +558,18 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
             info.img.height = size(data,2);
             info.img.frames = size(data,3);
 
+            % this will also change all the numeric versions to string
+            % versions
             % bring info structure version to 0.5, but if already greater,
             % then don't change
-            if str2num(info.version) <= 0.5
-                info.version = '0.5';
+            if isnumeric(info.version)
+                if info.version <= 0.5
+                    info.version = '0.5';
+                end
+            else
+                if str2num(info.version) <= 0.5
+                    info.version = '0.5';
+                end
             end
             
             % save info
