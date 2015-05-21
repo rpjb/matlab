@@ -324,9 +324,52 @@ jtable = jscroll.getViewport.getComponent(0);
         end
     end
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% create subset interface
+
+PrunePanel = uipanel('Title','Subset Panel','Units','centimeters','Position',[12 18 5 2.5],'BackgroundColor',[.8 .8 .8]);
+PruneButton = uicontrol('Parent',PrunePanel,'Style','PushButton');
+set(PruneButton,'String','Make Subsets','Units','centimeters');
+set(PruneButton,'Callback',@PruneFunction);
+set(PruneButton,'Position',[.5 .5 3 1]);
+    function [] = PruneFunction(~,~)
+        set(StatusText,'String','Pruning imaging dataset');
+        pause(.2)
+        % check if selected data
+        if isempty(selecteddata)
+            set(StatusText,'String','no datasets selected');
+            pause(.2)
+            return
+        end
+
+        % identify imaging sets to process 
+        numselected = size(selecteddata,1);
+        if numselected>1
+            disp('only analyze first one')
+        end
+
+        row = selecteddata(1,1);
+        align_in_folder = fullfile(input_folder, filedata{row,1}, filedata{row,2});
+        align_out_folder = fullfile(output_folder, filedata{row,1}, filedata{row,2});
+        [in_file, ~] = IdentifyImageFiles(align_in_folder,align_out_folder);
+
+
+        % spawn interface for picking cells
+        set(StatusText,'String','Close subset selector before continuing');
+        pause(.2);
+        currentfig = pruner(in_file);
+        waitfor(currentfig)
+
+        % update Status
+        set(StatusText,'String','Ready');
+        pause(.2);
+
+    end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % create aligning interface
-AlignPanel = uipanel('Title','Alignment Panel','Units','centimeters','Position',[12 12 5 8.5],'BackgroundColor',[.8 .8 .8]);
+AlignPanel = uipanel('Title','Alignment Panel','Units','centimeters','Position',[12 10 5 7.5],'BackgroundColor',[.8 .8 .8]);
 AlignOption = uibuttongroup('Title','Method','Parent',AlignPanel,'Units','centimeters','Position',[.5 2 4 4.5],'BackgroundColor',[.8 .8 .8]);
 u0 = uicontrol('Units','centimeters','Style','radiobutton','String','Matlab',...
     'pos',[0.15 2.50 3.5 0.5],'parent',AlignOption,'Enable','on');
