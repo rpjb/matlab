@@ -384,16 +384,10 @@ currentfiledata = [];
             
             % create info structure
             info = GrabImgType(align_in_folder, align_out_folder);
+
             % identify files
-            temp = FindFiles(align_in_folder,'.*.tif',1);
-            if length(temp)>1
-                in_file = temp;
-                out_file = fullfile(align_out_folder,'aligned.tif');
-            else
-                in_file = fullfile(align_in_folder, temp.name);
-                [~,fname,~] = fileparts(in_file);
-                out_file = fullfile(align_out_folder,[fname '.tif']);
-            end
+            [in_file, out_file] = IdentifyImageFiles(align_in_folder,align_out_folder)
+            
             % load information file
             info = LoadInfoFile(row);
             % carry out alignment
@@ -742,9 +736,21 @@ set(ImageJButton,'Position',[.5 .5 3 1]);
         end
         row = selecteddata(1,1);
         currentfiledata = filedata{row,:};            
-        tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},'aligned.tif');
-        StartMiji;
-        MIJ.run('Open...', ['path=[' tif_file ']']);
+
+        align_in_folder = fullfile(input_folder, filedata{row,1}, filedata{row,2});
+        align_out_folder = fullfile(output_folder, filedata{row,1}, filedata{row,2});
+        [in_file, out_file] = IdentifyImageFiles(align_in_folder,align_out_folder);
+        
+        StartMiji;            
+        if exist(out_file) % open the aligned file if it exists
+            MIJ.run('Open...', ['path=[' out_file ']']);
+        else % otherwise open the original 
+            if isstruct(in_file) % if a list of files
+                MIJ.run('Image Sequence...',['open=[' in_file(1).path '] sort']);
+            else % or a single file
+                MIJ.run('Open...', ['path=[' in_file ']']);
+            end
+        end
     end
 
 InfoButton = uicontrol('Parent',DebugPanel,'Style','PushButton');
@@ -797,6 +803,20 @@ set(InfoButton,'Position',[.5 1.5 3 1]);
         info_file = filedata{input_row,9}; % absolute path of info.mat
         info = input_info;
         save(info_file,'info');
+    end
+
+
+    function [in_file, out_file] = IdentifyImageFiles(align_in_folder,align_out_folder)
+        % identify files
+        temp = FindFiles(align_in_folder,'.*.tif',1);
+        if length(temp)>1 % for multi-file input, send a list
+            in_file = temp;
+            out_file = fullfile(align_out_folder,'aligned.tif');
+        else % for single input send a single file
+            in_file = fullfile(align_in_folder, temp.name);
+            [~,fname,~] = fileparts(in_file);
+            out_file = fullfile(align_out_folder,[fname '.tif']);
+        end
     end
 end
 
