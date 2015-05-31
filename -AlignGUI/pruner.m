@@ -1,4 +1,4 @@
-function [DisplayFigure] = pruner(in_file)
+function [DisplayFigure] = pruner(in_file,output_folder)
 % start miji
 StartMiji;
 import ij.*
@@ -150,21 +150,34 @@ set(SaveButton,'Position',[.5 2.5 2 0.5]);
         end
         subfolder = foldernames{end-1};
         newsubfolder = [subfolder '_x' num2str(subsetinfo.x(1)) '-' num2str(subsetinfo.x(2)) 'y' num2str(subsetinfo.y(1)) '-' num2str(subsetinfo.y(2)) 't' num2str(subsetinfo.t(1)) '-' num2str(subsetinfo.t(2))];
-        
-  
-
-        
+               
+        % create destination for subinfo.mat
         folder = strrep(folder,subfolder,newsubfolder);
         if ~exist(folder)
-            mkdir(folder)
+            mkdir(folder);
         end
         subsetinfo_file = fullfile(folder,'subset_info.mat');
-        output_file = fullfile(folder,filename);
 
-        % save info
+        % create destination for .tif subset file
+        output_file = fullfile(folder,filename);
+        if ispc % hotfix for imagej syntax for filesep
+            output_file = strrep(output_file,filesep,[filesep filesep]);
+        end
+
+        % create destination for info.mat
+        out_folder = strrep(output_folder,subfolder,newsubfolder);
+        suboutput_folder = out_folder;
+        if ~exist(suboutput_folder)
+            mkdir(suboutput_folder);
+        end
+
+        % save info file
+        masterinfo = fullfile(output_folder,'info.mat');
+        copyfile(masterinfo,suboutput_folder);
+        % save subset info file
         save(subsetinfo_file,'subsetinfo');
 		% save within imageJ
-		ij.IJ.runMacro(['saveAs("Tiff","' output_file ,'"']);
+		ij.IJ.runMacro(['saveAs("Tiff","' output_file ,'")']);
     end
 
 function [] = UpdateInfo()
