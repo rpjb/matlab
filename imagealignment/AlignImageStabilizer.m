@@ -18,27 +18,40 @@
 
 
 
-function tformdata = AlignImageStabilizer(input_file, output_file)
+function outputdata = AlignImageStabilizer(input_file, output_file)
 
-output_file = '/Users/rpjb/Desktop/aligned.tif';
-input_file = '/Users/rpjb/Desktop/original.tif';
 
 % import Miji and imagej library
 StartMiji;
 import ij.*
 
 % open file in imagej
-MIJ.run('Open...', ['path=[' input_file ']']);
+if isstruct(input_file)
+    MIJ.run('Image Sequence...',['open=[' input_file(1).path '] sort']);
+else
+    MIJ.run('Open...', ['path=[' input_file ']']);
+end
 
 % alignment with first image
 MIJ.run('ImageStabilizer register');
+
+
 % grab Transformation text window and close
 [~, fname, ~] = fileparts(input_file);
 
-IJ.selectWindow([fname '.log'])
+% if there is a space in the filename --
+spots = findstr(fname,' ');
+if isempty(spots)
+    imagejname = fname;
+else    
+    imagejname = fname(1:(spots(1)-1));
+end
+
+IJ.selectWindow([imagejname '.log'])
+
 temp = IJ.runMacro('getInfo');
 temp = IJ.getLog;
-IJ.selectWindow([fname '.log'])
+IJ.selectWindow([imagejname '.log'])
 MIJ.run('Close')
 
 IJ.selectWindow('Log')
@@ -63,9 +76,9 @@ for i=startind:length(lines)
 end
 tformdata = out;
 
-% close imagej windows
-
-
+% grab reference image
+tempimage = MIJ.getImage([fname '.tif']);
+referenceimage = squeeze(tempimage(:,:,1));
 
 
 
@@ -77,15 +90,16 @@ tformdata = out;
 
 
 % save aligned data
-IJ.selectWindow(['Stablized ' fname]);
+IJ.selectWindow(['Stablized ' imagejname]);
 IJ.saveAs('Tiff',output_file)
 MIJ.run('Close');
 
 IJ.selectWindow([fname '.tif']);
 MIJ.run('Close');
 
-
-
+% output data
+outputdata.tform = tformdata;
+outputdata.referenceimage = referenceimage;
 
 end
 
