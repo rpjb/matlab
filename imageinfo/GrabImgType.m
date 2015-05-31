@@ -76,5 +76,9 @@ end
 %     info.align.referenceimage = temp.aligndata.referenceimage;
 % end
 
-save(output_file,'info')
+[pathstr,~,~] = fileparts(output_file); 
+if ~exist(pathstr)   
+    mkdir(pathstr);
+end
+save(output_file,'info');
 
