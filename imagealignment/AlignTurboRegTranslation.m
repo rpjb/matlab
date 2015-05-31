@@ -9,7 +9,12 @@ StartMiji;
 import ij.*
 
 % open file in imagej
-MIJ.run('Open...', ['path=[' input_file ']']);
+if isstruct(input_file)
+    MIJ.run('Image Sequence...',['open=[' input_file(1).path '] sort']);
+else
+    MIJ.run('Open...', ['path=[' input_file ']']);
+end
+
 % prep for registration with first image
 MIJ.run('Turboreg prep');
 aligndata.referenceimage = MIJ.getImage('reference');
@@ -25,7 +30,6 @@ MIJ.run('Close')
 
 
 % format tformdata into consistent matrix
-
 
 % save aligned data
 IJ.selectWindow('finished');
