@@ -472,7 +472,7 @@ set(SaveButton,'Position',[3 8 2 .5]);
         info.cells.datesaved = datestr(now,'yyyymmdd HH:MM');
         info.cells.numcells = size(cellcontours,3);
         info.cells.cellcontours = cellcontours;
-        info.cells.celltraces = [];
+        info.cells.celltrace = [];
         for i=1:info.cells.numcells
             maskeddata = double((originaldata.*repmat(uint16(cellcontours(:,:,i)>0),[1 1 maxframe])));
             info.cells.celltrace{i} = squeeze( sum(sum(maskeddata,1),2)/sum(sum(cellcontours(:,:,i)>0)) );
