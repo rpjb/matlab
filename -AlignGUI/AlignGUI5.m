@@ -350,21 +350,24 @@ set(PruneButton,'Position',[.5 .5 3 1]);
         end
 
         row = selecteddata(1,1);
+        
+        % load information file
+        info = LoadInfoFile(row);
         align_in_folder = fullfile(input_folder, filedata{row,1}, filedata{row,2});
         align_out_folder = fullfile(output_folder, filedata{row,1}, filedata{row,2});
         [in_file, ~] = IdentifyImageFiles(align_in_folder,align_out_folder);
+        if isempty(info) % create info structure
+            info = GrabImgType(align_in_folder, align_out_folder);
+        end
 
 
         % spawn interface for picking cells
         set(StatusText,'String','Close subset selector before continuing');
         pause(.2);
-        currentfig = pruner(in_file);
+        currentfig = pruner(in_file,align_out_folder);
         waitfor(currentfig)
-
-        % update Status
-        set(StatusText,'String','Ready');
-        pause(.2);
-
+        CloseImageJWindows;      
+        AlignGUI5(input_folder,output_folder)
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,14 +428,15 @@ currentfiledata = [];
                 mkdir(align_out_folder)
             end
             
-            % create info structure
-            info = GrabImgType(align_in_folder, align_out_folder);
-
-            % identify files
-            [in_file, out_file] = IdentifyImageFiles(align_in_folder,align_out_folder)
-            
             % load information file
             info = LoadInfoFile(row);
+            if isempty(info) % create info structure
+                info = GrabImgType(align_in_folder, align_out_folder);
+            end
+                
+            % identify files
+            [in_file, out_file] = IdentifyImageFiles(align_in_folder,align_out_folder);
+            
             % carry out alignment
             switch currentalignoption
             case 'Turboreg translation'
@@ -455,7 +459,9 @@ currentfiledata = [];
                 info.metadata.isstack = true;
             case 'Image Stabilizer'               
                 info.align.method = 'image_stabilizer';
-                disp('not working yet');
+                aligndata = AlignImageStabilizer(in_file,out_file);
+                info.align.tform = aligndata.tform;
+                info.align.referenceimage = aligndata.referenceimage;
                 info.metadata.isstack = true;
             case '4D stack'
                 if strcmp(info.type,'olympusXYT') % if olympus file has no period it's probably a galvo stack
