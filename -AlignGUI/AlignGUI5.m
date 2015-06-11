@@ -554,7 +554,6 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
             end         
 
             
-            
             % determine what the image_file should be
             if strcmp(info.type,'olympusXYT')
                 % if img_file doesn't exist skip
@@ -566,7 +565,7 @@ set(UpdateInfoButton,'Position',[.5 4.5 3 1]);
                     % skip to next file
                     continue
                 end
-            elseif sum(strcmp(info.type,{'epi single-tif','olympusXYZ'}))
+            elseif sum(strcmp(info.type,{'epi multi-tif','epi single-tif','olympusXYZ'}))
                 temp = dir(fullfile(align_out_folder,'*.tif'));
                 if isempty(temp)
                     set(StatusText,'String','img file not found');
@@ -659,6 +658,7 @@ set(ManualPickButton,'Position',[.5 3.5 3 1]);
             end
             tif_file = fullfile(output_folder, filedata{row,1}, filedata{row,2},temp.name);
         end
+        
         % spawn interface for picking cells
         set(StatusText,'String','Close cell selector before continuing');
         pause(.2);
