@@ -141,10 +141,11 @@ set(SaveButton,'Position',[.5 2.5 2 0.5]);
 
         
         
-        if isstruct(in_file)
-            foldernames = strsplit(in_file(1).name,filesep);
-            [folder, filename, ~] = fileparts(in_file(1).name); 
-        else
+        if isstruct(in_file) % if original file is a set of tifs
+            temp_file = fullfile(in_file(1).path,in_file(1).name);
+            foldernames = strsplit(temp_file,filesep);
+            [folder, filename, ~] = fileparts(temp_file); 
+        else % if original file is a single file (in_file is an absolute path)
             foldernames = strsplit(in_file,filesep);
             [folder, filename, ~] = fileparts(in_file); 
         end
