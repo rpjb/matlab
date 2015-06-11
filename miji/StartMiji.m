@@ -29,14 +29,18 @@ if ~exist('MIJ','class') % execute if MIJ is not already loaded
             addpath('/Applications/Fiji.app/scripts');
             Miji;
             return
-        end
-    elseif ispc
-        if exist('C:\Users\rpjb\My Dropbox\matlab\Fiji.app\scripts')
-            addpath('C:\Users\rpjb\My Dropbox\matlab\Fiji.app\scripts')
+        elseif exist('/Users/rpjb/Dropbox/matlab/fiji/osx/Fiji.app/scripts')
+            addpath('/Users/rpjb/Dropbox/matlab/fiji/osx/Fiji.app/scripts');
             Miji;
             return
-        elseif exist('C:\Users\rpjb\Dropbox\matlab\Fiji.app\scripts')
-            addpath('C:\Users\rpjb\Dropbox\matlab\Fiji.app\scripts')
+        end
+    elseif ispc
+        if exist('C:\Users\rpjb\My Dropbox\matlab\fiji\pc\Fiji.app\scripts')
+            addpath('C:\Users\rpjb\My Dropbox\matlab\fiji\pc\Fiji.app\scripts')
+            Miji;
+            return
+        elseif exist('C:\Users\rpjb\Dropbox\matlab\fiji\pc\Fiji.app\scripts')
+            addpath('C:\Users\rpjb\Dropbox\matlab\fiji\pc\Fiji.app\scripts')
             Miji;
             return
         end
