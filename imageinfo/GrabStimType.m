@@ -1,5 +1,5 @@
 % GrabStimType Identifies the imaging stimulation parameters for Lindsey
-% datasets
+% datasets on Olympus XYZT microscope
 %
 % Stimulation info is created and stored in the info.mat structure. Note
 % that you need to update the location of the lmstim.xls file

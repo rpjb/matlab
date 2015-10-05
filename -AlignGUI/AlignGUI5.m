@@ -704,10 +704,14 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
             info = LoadInfoFile(row);
             infopath = filedata{row,9};
             switch info.type
+                % grabs stim info and saves in info file
                 case 'epi single-tif'
                     info = GrabEpiStimType(infopath);
                 case 'olympusXYZT'
                     info = GrabStimType(infopath);                
+                case 'prairie'
+                    info = GrabPrairieStimType(infopath);
+                
                 otherwise
                     % includes 'olympusXYZ'
                     disp([info.type ' img type not yet supported'])                    
@@ -723,11 +727,17 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
                 disp(['numcells:' num2str(info.cells.numcells)])
                 for q = 1:info.cells.numcells
                     PlotFigure = figure;
-                    prepfigure(PlotFigure,[15 8]);
+                    prepfigure(PlotFigure,[20 8]);
                     set(PlotFigure,'Units','centimeters')
                     PlotAxes = axes;
                     xdata = [1:length(info.cells.celltrace{q})]*info.img.period;
                     ydata = info.cells.celltrace{q};
+
+                    % filter two-photon data as it is normally noisier
+                    if strcmp('prairie',info.type)
+                        [ydata, ~] = CalciumTraceFilter(ydata,'median',4);
+                    end
+                    
                     [~,~,med] = FastFindTransients(ydata,xdata);
                     celltrace = (ydata-med)./med;
                     plot(xdata,celltrace)
@@ -738,7 +748,7 @@ set(PlotButton,'Position',[.5 2.5 3 1]);
                         rectangle('Position',[info.stim.onsets(r),-.45 info.stim.duration,h],'FaceColor',[.2 .2 .2])
                         text(info.stim.onsets(r)+.5*info.stim.duration,-.6+h+h/2,info.stim.types{r},'HorizontalAlignment','center','FontSize',6)
                     end
-                    set(gca,'YLim',[-.6 1.0])
+                    set(gca,'YLim',[-.6 2.0])
                     temp = strrep(infopath,input_folder,'');
                     temp = temp(2:(end-9));
                     temp = strrep(temp,filesep,'-');
